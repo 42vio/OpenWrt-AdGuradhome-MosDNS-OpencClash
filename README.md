@@ -1,1 +1,1 @@
-# -openwrt-adguradhome-mosdns-openclash
+# [openwrt]adguradhome-mosdns-openclash
