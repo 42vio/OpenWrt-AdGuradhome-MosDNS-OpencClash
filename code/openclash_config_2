@@ -1,0 +1,44 @@
+en_mode=$(uci -q get openclash.config.en_mode)
+proxy_port=$(uci -q get openclash.config.proxy_port)
+FW4=$(opkg list-installed | grep "^firewall4")
+
+if [ "$en_mode" == "fake-ip" ]; then
+	if [ -n "$FW4" ]; then
+    # 删除默认转发配置，使用OpenClash 自带的 china_ip_route，修改代理逻辑为：FakeIP&非国内IP流量走OpenClash内核，可以避免部分直连ip应用代理异常
+    LOG_OUT "Limit route to only fake ips with proxy port $proxy_port"
+    openclash_rule=$(nft -a list chain inet fw4 openclash | grep $proxy_port |awk 'END {print $NF}')
+    nft delete rule inet fw4 openclash handle $openclash_rule
+    openclash_o_rule=$(nft -a list chain inet fw4 openclash_output | grep $proxy_port |awk 'END {print $NF}')
+    nft delete rule inet fw4 openclash_output handle $openclash_o_rule
+
+    nft -a list set inet fw4 openclash_proxy_ip
+    if [ $? -eq 0 ]; then
+      LOG_OUT "delete openclash_proxy_ip setting"
+      nft delete set inet fw4 openclash_proxy_ip
+    fi
+    nft -a list set inet fw4 china_ip_route
+    if [ $? -eq 0 ]; then
+      LOG_OUT "Add special proxy rules"
+      nft add rule inet fw4 openclash ip protocol tcp ip daddr != @china_ip_route  counter packets 5 bytes 320 redirect to :7892
+      nft add rule inet fw4 openclash_output ip protocol tcp meta skuid != 65534 ip daddr != @china_ip_route counter packets 29 bytes 1740 redirect to :7892
+      else
+      LOG_OUT "china_ip_route is not exist. Skip add the rules"
+    fi
+  else
+    # 只有fake-ip 经过内核 或者 大陆IP绕过内核 
+    #LOG_OUT "limit route to only fake ips with proxy port $proxy_port"
+    #iptables -t nat -D openclash -p tcp -j REDIRECT --to-ports $proxy_port
+    LOG_OUT "大陆IP绕过 Openclash 内核功能开启"
+    iptables -t nat -I openclash -m set --match-set china_ip_route dst -j RETURN
+	fi
+fi
+
+# 重启AdguradHome
+LOG_OUT "restart adguardhome"
+/etc/init.d/AdGuardHome restart
+sleep 1
+
+# 重载Mosdns
+LOG_OUT "reload mosdns"
+/etc/init.d/mosdns reload
+sleep 1
