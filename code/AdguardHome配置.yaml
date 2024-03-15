@@ -98,30 +98,34 @@ statistics:
   interval: 24h
   enabled: true
 filters:
-  - enabled: true
+  - enabled: false
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
     name: AdGuard DNS filter
     id: 1
   - enabled: false
-    url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_2.txt
-    name: AdAway Default Blocklist
-    id: 2
-  - enabled: true
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_21.txt
     name: 'CHN: anti-AD'
-    id: 1710472122
-  - enabled: true
+    id: 2
+  - enabled: false
     url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_29.txt
     name: 'CHN: AdRules DNS List'
-    id: 1710472123
+    id: 3
+  - enabled: false
+    url: https://easylist-downloads.adblockplus.org/easylistchina.txt
+    name: EasylistChina
+    id: 4
   - enabled: true
-    url: https://raw.githubusercontent.com/o0HalfLife0o/list/master/ad-pc.txt
-    name: halflife规则
-    id: 1710472124
+    url: https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all.txt
+    name: BlueSkyXN-all
+    id: 5
   - enabled: true
-    url: https://www.i-dont-care-about-cookies.eu/abp/
-    name: 屏蔽网站cookies相关警告
-    id: 1710472125
+    url: https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/skyrules.txt
+    name: BlueSkyXN-skyrules
+    id: 6
+  - enabled: true
+    url: https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/ok.txt
+    name: BlueSkyXN-ok
+    id: 7
 whitelist_filters: []
 user_rules:
   - '@@||taobao.com^$important'
@@ -134,18 +138,6 @@ user_rules:
   - '@@||apple.com.cn^$important'
   - '@@||bilibili.com^$important'
   - '@@||42vio.top^$important'
-  - /googleads.$~script,domain=~googleads.github.io
-  - /pagead/lvz?
-  - '||google.com/pagead/'
-  - '||static.doubleclick.net^$domain=youtube.com'
-  - '||youtube.com/get_midroll_'
-  - '||5hz.org^'
-  - '||topnewsfeeds.net^'
-  - '||nbryb.com^'
-  - '||superbdolly.com^'
-  - '||salutationcheerlessdemote.com^'
-  - '||buildingdoodlesquare.com^'
-  - '||colonistnobilityheroic.com^'
   - '@@||beacon.tingyun.com^$important'
   - '@@||browser.events.data.msn.cn^$important'
   - '@@||c.msn.cn^$important'
